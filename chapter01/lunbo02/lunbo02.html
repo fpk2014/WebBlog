@@ -11,44 +11,60 @@
 	margin:0;
 }
 #root {
-	width:500px;
-	height:300px;
+	width:800px;
+	height:500px;
 	position: relative;
 	margin: 50px auto;
 	overflow: hidden;
 }
 #lunbo-img {
 	width: 100000px;
-	height:300px;
+	height:500px;
 	overflow: hidden;
 	position: absolute;
 	left:0px;
 }
 img {
 	float:left;
-	width:500px;
-	height:300px;
+	width:800px;
+	height:500px;
 }
 #controls {
 	width:100%;
 	position: absolute;
 	bottom: 0px;
+	text-align: center;
 }
 #controls div {
+	display:inline-block;
 	width:100px;
 	height: 30px;
 	border: 0px solid black;
-	float:left;
 	text-align: center;
     line-height: 30px;
     font-size: 16px;
 	color: white;
-	background-color: red;
+	background-color: rgba(0,0,0,0.7);
 	cursor: pointer;
 }
-#controls div.img-leave {
-	background: rgba(0,0,0,0.7);
+#controls div.img-focus {background-color: red;}
+#root>span{
+	width:40px;
+	height:40px;
+	position:absolute;
+	top:50%;
+	margin-top:-20px;
+	background:rgba(0,0,0,0.3);
+	font-size:30px;
+	line-height:40px;
+	color:#fff;
+	text-align:center;
+	cursor:pointer;
+	display:none;
 }
+#root:hover>span{display:block;}
+#prev{left:20px;}
+#next{right:20px;}
 </style>
 </head>
 
@@ -60,8 +76,9 @@ img {
 		<img src="./4.jpg">
 		<img src="./5.jpg">
 	</div>
+	<span id='prev'>&lt;</span><span id='next'>&gt;</span>
 	<div id="controls" class="clearfloat">
-		<div clstag="1">1</div>
+		<div clstag="1" class="img-focus">1</div>
 		<div clstag="2">2</div>
 		<div clstag="3">3</div>
 		<div clstag="4">4</div>
@@ -69,32 +86,70 @@ img {
 	</div>
 </div>
 <script>
+(function initial(focus){
+	var imgs = document.querySelectorAll('img');
+	var controls = document.querySelectorAll('#controls div');
+	var ctr_length = controls.length;
+	var i
+	document.querySelector('#controls div.img-focus').classList = '';
+	document.querySelectorAll('#controls div')[focus].classList = 'img-focus';
+	document.querySelector('#lunbo-img').style.left = '0px';
+}(0))
 window.onload = function(){
 	var imgs = document.querySelectorAll('img');
 	var length = imgs.length;
 	var img = imgs[0];
 	var width = img.width;
 	var height = img.height;
+	var prev=document.getElementById('prev');
+	var next=document.getElementById('next');
 	
-	var i, focus;
-	var prevLeft=0;
-	focus = 0;
+	var i;
+	var prevFocus = focus = 0;
 
-	var timer = function(func, i) {
+	var interval=20;//移动时间间隔
+	var duration=500;   //移动时间
+	var stoptime=4500;  //在一张图片上的停留时间
+	var timer; //= setInterval(auto,duration+stoptime);
+	
+	var tt = function(func, i) {
 		setTimeout(function() {
 			func(i);
 		}, i);
 	}
-	
-	function changeLeft(focus){
-		console.log(-focus*width+'px');
-		focus-1<0?prevLeft=0:prevLeft=(focus-1)*width;
-		for(i=prevLeft; i<=focus*width; i++){
-			timer(function(i){
-				document.querySelector('#lunbo-img').style.left = (-i)+'px';
-			}, i)
-			
+
+	function move(preFocus,focus){
+		if(preFocus<focus){
+			for(i=preFocus*width; i<=focus*width; i++){
+				tt(function(i){
+					document.querySelector('#lunbo-img').style.left = (-i)+'px';
+				}, i)
+			}
+		}else{
+			for(i=focus*width; i<=preFocus*width; i++){
+				tt(function(i){
+					document.querySelector('#lunbo-img').style.left = -(preFocus*width-i)+'px';
+				}, i)
+			}
 		}
+	}
+	
+	prev.onclick=function(){
+		focus = document.querySelector('#controls div.img-focus').getAttribute('clstag')-1;
+		preFocus = focus;
+		focus-1>=0 ? focus=focus-1: focus=length-1;
+		console.log(preFocus, focus);
+		move(preFocus, focus);
+		document.querySelector('#controls div.img-focus').classList = '';
+		document.querySelectorAll('#controls div')[focus].classList = 'img-focus';
+	}
+	next.onclick=function(){
+		focus = document.querySelector('#controls div.img-focus').getAttribute('clstag')-1;
+		preFocus = focus;
+		focus+1<length ? focus=focus+1: focus=0;
+		document.querySelector('#controls div.img-focus').classList = '';
+		document.querySelectorAll('#controls div')[focus].classList = 'img-focus';
+		move(preFocus, focus);
 	}
 	
 	//控制栏，添加click事件
@@ -102,37 +157,31 @@ window.onload = function(){
 	var ctr_length = controls.length;
 	for(i=0; i<ctr_length; i++){
 		controls[i].onclick = function(){
+			clearInterval(timer);
+			prevFocus = focus;
 			focus=this.getAttribute('clstag')-1;
-			for(i=0; i<length; i++){
-				//(i!==focus)?imgs[i].classList = 'img-leave':imgs[focus].classList = '';
-				(i!==focus)?controls[i].classList = 'img-leave':controls[focus].classList = '';
-			}
-			changeLeft(focus);
+			
+			document.querySelector('#controls div.img-focus').classList = '';
+			document.querySelectorAll('#controls div')[focus].classList = 'img-focus';
+			
+			move(prevFocus, focus);
 		};
+		controls[i].onmouseover = function(){clearInterval(timer);};
+		controls[i].onmouseout=function(){timer=setInterval(auto,duration+stoptime);}
 	}
 	
 	//自动循环播放下一张
-	setInterval(function(e){
-		controls = document.querySelectorAll('#controls div');
-		for(i=0; i<length; i++){
-			//(i!==focus)?imgs[i].classList = 'img-leave':imgs[focus].classList = '';
-			(i!==focus)?controls[i].classList = 'img-leave':controls[focus].classList = '';
-		}
-		changeLeft(focus);
+	function auto(){
+		document.querySelector('#controls div.img-focus').classList = '';
+		document.querySelectorAll('#controls div')[focus].classList = 'img-focus';
+		move(prevFocus, focus);
+		prevFocus = focus;
 		focus++;
 		if(focus>=length)
 			focus=0;
-	}, 3000);
-}
-(function initial(focus){
-	var imgs = document.querySelectorAll('img');
-	var controls = document.querySelectorAll('#controls div');
-	var ctr_length = controls.length;
-	var i
-	for(i=0; i<ctr_length; i++){
-		(i!==focus)?controls[i].classList = 'img-leave':controls[focus].classList = '';
 	}
-}(0))
+	timer = setInterval(auto,duration+stoptime);  //设定定时切换
+}
 </script>
 </body>
 </html>

@@ -91,7 +91,7 @@ window.onload = function(){
 	}
 	
 	//自动循环播放下一张
-	setInterval(function(e){
+	setInterval(function(){
 		controls = document.querySelectorAll('#controls div');
 		for(i=0; i<ctr_length; i++){
 			(i!==focus)?imgs[i].classList = 'img-leave':imgs[focus].classList = '';
