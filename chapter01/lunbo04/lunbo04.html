@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>淡入淡出轮播</title>
+<base target="_blank">
+
+<style>
+* {
+	padding:0;
+	margin:0;
+}
+#root {
+	width:500px;
+	height:300px;
+	position: relative;
+	margin: 50px auto;
+}
+#lunbo-img {
+	width:500px;
+	height:300px;
+	overflow: hidden;
+	position: relative;
+}
+img {
+	position:absolute;
+	float:left;
+	width:100%;
+	height:100%;
+	transition: opacity 1s ease;
+}
+img.img-leave {
+	opacity: 0;
+}
+#controls {
+	width:100%;
+	position: relative;
+}
+#controls div {
+	width:100px;
+	height: 30px;
+	border: 0px solid black;
+	float:left;
+	text-align: center;
+    line-height: 30px;
+    font-size: 16px;
+	color: white;
+	background-color: red;
+	cursor: pointer;
+}
+#controls div.img-leave {
+	background: rgba(0,0,0,0.7);
+}
+</style>
+</head>
+
+<div id="root">
+	<div id="lunbo-img" class="clearfloat">
+		<img src="./1.jpg">
+		<img src="./2.jpg">
+		<img src="./3.jpg">
+		<img src="./4.jpg">
+		<img src="./5.jpg">
+	</div>
+	<div id="controls" class="clearfloat">
+		<div clstag="1">1</div>
+		<div clstag="2">2</div>
+		<div clstag="3">3</div>
+		<div clstag="4">4</div>
+		<div clstag="5">5</div>
+	</div>
+</div>
+<script>
+window.onload = function(){
+	var imgs = document.querySelectorAll('img');
+	var controls = document.querySelectorAll('#controls div');
+	var ctr_length = controls.length;
+	//var length = imgs.length;
+	var i, focus;
+	focus = 0;
+	
+	//控制栏，添加click事件
+	for(i=0; i<ctr_length; i++){
+		controls[i].onclick = function(){
+			focus=this.getAttribute('clstag')-1;
+			for(i=0; i<ctr_length; i++){
+				(i!==focus)?imgs[i].classList = 'img-leave':imgs[focus].classList = '';
+				(i!==focus)?controls[i].classList = 'img-leave':controls[focus].classList = '';
+			}
+		};
+	}
+	
+	//自动循环播放下一张
+	setInterval(function(e){
+		controls = document.querySelectorAll('#controls div');
+		for(i=0; i<ctr_length; i++){
+			(i!==focus)?imgs[i].classList = 'img-leave':imgs[focus].classList = '';
+			(i!==focus)?controls[i].classList = 'img-leave':controls[focus].classList = '';
+		}
+		focus++;
+		if(focus>=ctr_length)
+			focus=0;
+	}, 2000);
+}
+(function initial(focus){
+	var imgs = document.querySelectorAll('img');
+	var controls = document.querySelectorAll('#controls div');
+	var ctr_length = controls.length;
+	var i
+	for(i=0; i<ctr_length; i++){
+		(i!==focus)?controls[i].classList = 'img-leave':controls[focus].classList = '';
+	}
+}(0))
+</script>
+</body>
+</html>
