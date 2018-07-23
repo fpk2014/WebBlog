@@ -86,15 +86,6 @@ img {
 	</div>
 </div>
 <script>
-(function initial(focus){
-	var imgs = document.querySelectorAll('img');
-	var controls = document.querySelectorAll('#controls div');
-	var ctr_length = controls.length;
-	var i
-	document.querySelector('#controls div.img-focus').classList = '';
-	document.querySelectorAll('#controls div')[focus].classList = 'img-focus';
-	document.querySelector('#lunbo-img').style.left = '0px';
-}(0))
 window.onload = function(){
 	var imgs = document.querySelectorAll('img');
 	var length = imgs.length;
@@ -108,33 +99,38 @@ window.onload = function(){
 	var prevFocus = focus = 0;
 
 	var interval=20;//移动时间间隔
-	var duration=500;   //移动时间
-	var stoptime=4500;  //在一张图片上的停留时间
-	var timer; //= setInterval(auto,duration+stoptime);
+	var stoptime=3000;  //在一张图片上的停留时间
 	
-	var tt = function(func, i) {
-		setTimeout(function() {
-			func(i);
-		}, i);
-	}
-
+	
 	function move(preFocus,focus){
+		var lunbo_img = document.querySelector('#lunbo-img');
+		var k=0, tmp='', jiange;
 		if(preFocus<focus){
-			for(i=preFocus*width; i<=focus*width; i++){
-				tt(function(i){
-					document.querySelector('#lunbo-img').style.left = (-i)+'px';
-				}, i)
-			}
+			jiange = focus*width - preFocus*width;
+			clearInterval(tmp);
+			tmp = setInterval(function() {
+				if(k <= jiange){
+					lunbo_img.style.left = -(preFocus*width + k) + 'px';
+					k+=10;
+				}else{
+					 clearInterval(tmp);
+				}
+			}, 1);
 		}else{
-			for(i=focus*width; i<=preFocus*width; i++){
-				tt(function(i){
-					document.querySelector('#lunbo-img').style.left = -(preFocus*width-i)+'px';
-				}, i)
-			}
+			jiange = preFocus*width - focus*width;
+			clearInterval(tmp);
+			tmp = setInterval(function() {
+				if(k <= jiange){
+					lunbo_img.style.left = -(preFocus*width - k) + 'px';
+					k+=10;
+				}else{
+					 clearInterval(tmp);
+				}
+			}, 1);
 		}
 	}
 	
-	prev.onclick=function(){
+	prev.onclick = function(){
 		focus = document.querySelector('#controls div.img-focus').getAttribute('clstag')-1;
 		preFocus = focus;
 		focus-1>=0 ? focus=focus-1: focus=length-1;
@@ -143,7 +139,7 @@ window.onload = function(){
 		document.querySelector('#controls div.img-focus').classList = '';
 		document.querySelectorAll('#controls div')[focus].classList = 'img-focus';
 	}
-	next.onclick=function(){
+	next.onclick = function(){
 		focus = document.querySelector('#controls div.img-focus').getAttribute('clstag')-1;
 		preFocus = focus;
 		focus+1<length ? focus=focus+1: focus=0;
@@ -153,6 +149,7 @@ window.onload = function(){
 	}
 	
 	//控制栏，添加click事件
+	var timer;
 	var controls = document.querySelectorAll('#controls div');
 	var ctr_length = controls.length;
 	for(i=0; i<ctr_length; i++){
@@ -167,7 +164,7 @@ window.onload = function(){
 			move(prevFocus, focus);
 		};
 		controls[i].onmouseover = function(){clearInterval(timer);};
-		controls[i].onmouseout=function(){timer=setInterval(auto,duration+stoptime);}
+		controls[i].onmouseout=function(){timer=setInterval(auto,stoptime);}
 	}
 	
 	//自动循环播放下一张
@@ -180,7 +177,7 @@ window.onload = function(){
 		if(focus>=length)
 			focus=0;
 	}
-	timer = setInterval(auto,duration+stoptime);  //设定定时切换
+	timer = setInterval(auto,stoptime);  //设定定时切换
 }
 </script>
 </body>
