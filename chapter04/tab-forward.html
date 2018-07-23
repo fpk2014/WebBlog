@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>自动切换焦点</title>
+<base target="_blank">
+</head>
+
+<body>
+<div id="root">
+<form>
+<input id="input-01" maxLength='5' placeholder="最大长度为5">
+<input id="input-02" maxLength='5' placeholder="最大长度为5">
+<input id="input-03" maxLength='5' placeholder="最大长度为5">
+</form>
+</div>
+
+<script>
+var input_01 = document.getElementById('input-01');
+var input_02 = document.getElementById('input-02');
+var input_03 = document.getElementById('input-03');
+
+function tabForward(event){
+	console.log(event.srcElement);
+	var value = event.target.value || '';
+	if(value.length == 5){
+		event.target.nextElementSibling.focus();
+	}
+}
+
+input_01.onkeyup = function(event){
+	tabForward(event);
+}
+input_02.onkeyup = function(event){
+	tabForward(event);
+}
+</script>
+</body>
+</html>

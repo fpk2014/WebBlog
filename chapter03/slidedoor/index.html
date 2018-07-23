@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>滑动门</title>
+<base target="_blank">
+
+<style>
+#root {
+	width: 955px;
+	height: 477px;
+    border: 1px solid #ccc;
+    position: relative;
+    overflow: hidden;
+}
+img {
+	position: absolute;
+	border:1px solid #ccc;
+	transition:left 1s ease;
+}
+</style>
+</head>
+
+<body>
+<div id="root">
+	<img src="door1.png">
+	<img src="door2.png">
+	<img src="door3.png">
+	<img src="door4.png">
+</div>
+
+<script>
+var imgs = document.querySelectorAll('img');
+var length = imgs.length;
+var width = 475; //图片尺寸
+var width_dispaly = 160; //展示图片尺寸
+var i;
+(function initial(){
+	for(i=1; i<length; i++){
+		imgs[i].style.left = width+ (i-1)*width_dispaly + 'px';
+	}
+}());
+
+//计算各图片的left值
+function func(focus){
+	var t = [];
+	var i;
+	for(i=focus; i>=0; i--){
+		t[i] =  width_dispaly*i;
+	}
+	for(i=focus+1; i<length; i++){
+		t[i] = width_dispaly*(i-1)+width;
+	}
+	return t;
+}
+for(i=0; i<length; i++){
+	imgs[i].index=i;
+	imgs[i].onmouseover = function(){
+		var index=this.index;
+		var t = func(index)
+		for(i=0; i<length; i++){
+			imgs[i].style.left = t[i] + 'px';
+		}
+	}
+}
+</script>
+</body>
+</html>

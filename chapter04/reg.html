@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>阻止某个表单控件验证</title>
+<base target="_blank">
+<style>
+#text-01 {
+	height: 200px;
+	width: 80%;
+}
+#text-02 {
+	height: 200px;
+	width: 80%;
+	border: 1px solid black;
+}
+.bg-yellow {
+	color: yellow;
+}
+</style>
+</head>
+
+<body>
+<div id="root">
+<div><p>输入正则表达式</p></div>
+<textarea type="text" required id="text-01"></textarea>
+
+<div><p>输入要匹配的文字</p></div>
+<div id="text-02" contenteditable="true"></div>
+</div>
+
+<script>
+var text_01 = document.getElementById('text-01');
+var text_02 = document.getElementById('text-02');
+var str;
+text_01.addEventListener("input",function(){
+	try{
+		var reg = new RegExp('(' + this.value + ')','m');
+		text_02.innerHTML = str.replace(reg,"<span class='bg-yellow'>$1</span>");	
+	}catch(e){
+
+	}
+}, false);
+text_02.addEventListener("keyup", function(){
+	str = text_02.innerHTML;
+	//console.log(str);
+}, false);
+</script>
+</body>
+</html>

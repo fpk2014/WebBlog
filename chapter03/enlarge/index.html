@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>点击放大缩小</title>
+<base target="_blank">
+
+<style>
+* {
+	padding: 0;
+	margin: 0;
+}
+.enlarge-img,  .enlarge-button{
+	margin: 10px auto;
+}
+.enlarge-img {
+	width: 400px;
+	height: 300px;
+}
+.enlarge-button{
+	width: 100px;
+}
+.enlarge-img img{
+	width: 100%;
+	height: 100%;
+}
+</style>
+</head>
+
+<div id="root">
+	<div class="enlarge-img">
+		<img src="./1.jpg">
+	</div>
+	<div class="enlarge-button">
+		<button id="enlarge">放大</button>
+		<button id="ensmall">缩小</button>
+	</div>
+</div>
+<script>
+
+document.getElementById('enlarge').onclick = function(){
+	var timer=setInterval(function(){
+		var enlarge_img = document.querySelector('div.enlarge-img');
+		var height = enlarge_img.offsetHeight;
+		var width = enlarge_img.offsetWidth;
+		//console.log(height, width);
+		if(height < 400){
+			enlarge_img.style.height = height+3+'px';
+			enlarge_img.style.width = width+4+'px';
+		}else{
+			 clearInterval(timer);
+		}
+	}, 20);
+}
+document.getElementById('ensmall').onclick = function(){
+	var timer=setInterval(function(){
+		var ensmall_img = document.querySelector('div.enlarge-img');
+		var height = ensmall_img.offsetHeight;
+		var width = ensmall_img.offsetWidth;
+		if(height > 200){
+			ensmall_img.style.height = height-3+'px';
+			ensmall_img.style.width = width-4+'px';
+		}else{
+			 clearInterval(timer);
+		}
+	}, 20);
+}
+</script>
+</body>
+</html>

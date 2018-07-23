@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>图片墙</title>
+<base target="_blank">
+<style>
+body {
+    background-color: #282828;
+}
+main {
+	width: 1150px;
+	overflow: hidden;
+	margin: 30px auto;
+}
+main>div {
+	width: 190px;
+    height: 190px;
+    border: 10px solid #383838;
+    position: relative;
+    overflow: hidden;
+    float: left;
+    margin: 20px 10px;
+}
+main>div:hover{border-color:#4c4c4c;}
+img {
+	width: 100%;
+	height: 100%;
+}
+.info{
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background:rgba(255,0,0,0);
+	transform-origin:right bottom;
+	transform:rotate(90deg);
+	transition:all 0.5s ease;
+}
+main>div:hover .info{
+	transform:rotate(0deg);
+    background:rgba(255,0,0,0.4);
+}
+.info>span{
+	margin:50px auto 0;
+	display:block;
+	width:40px;
+	height:40px;
+	border-radius:50%;
+	background-color:#fff;
+	color:red;
+	font-size:50px;
+	line-height:40px;
+	text-align:center;
+}
+.name{
+	font-size:24px;
+	margin-top:20px;
+    text-align: center;
+    color: #fff;
+}
+</style>
+</head>
+
+<body>
+<div id="root">
+	<main id="main">
+	</main>
+</div>
+
+<script>
+var main = document.getElementById('main');
+var str = '\
+			<div>\
+				<img src="1.jpg">\
+				<div class="info">\
+					<span>+</span>\
+					<p class="name">toto</p>\
+				</div>\
+			</div>\
+			'
+var i;
+for(i=0; i<10; i++)
+	main.innerHTML += str;
+</script>
+</body>
+</html>

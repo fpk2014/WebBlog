@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>悬浮淡出</title>
+<base target="_blank">
+
+<style>
+* {
+	padding: 0;
+	margin: 0;
+}
+#smallWrap{
+	padding: 5px;
+	position:relative;
+	width: 350px;
+    height: 350px;
+	margin:50px;
+	border:1px solid #ccc;
+	cursor:move;
+	overflow: hidden;
+}
+#smallWrap img {
+	position:relative;
+	width:100%;
+	height:100%;
+}
+#bigWrap{
+	width:400px;
+	height:400px;
+	padding: 5px;
+	background-image:url(1.jpg);
+	position:absolute;
+	left:500px;
+	top:50px;
+	border:1px solid #ccc;
+	display:none;
+}
+#magnifier {
+	position:absolute;
+	width: 200px;
+	height: 200px;
+	border: 1px solid gray;
+	background-color:rgba(133,133,0,0.2);
+}
+</style>
+</head>
+
+<div id="root">
+	<div id='smallWrap'>
+		<img src="./1.jpg">
+	</div>
+	<div id='bigWrap'></div>
+</div>
+<script>
+window.onload = function(){
+	var smallWrap = document.getElementById('smallWrap');
+	var bigWrap = document.getElementById('bigWrap');
+	var magnifier = document.createElement('div');
+	
+	var swWidth=smallWrap.clientWidth;
+	var swHeight=smallWrap.clientHeight;
+	magnifier.id='magnifier';
+	
+	smallWrap.onmouseenter = function(){
+		console.log(this);
+		smallWrap.appendChild(magnifier);
+	}
+	smallWrap.onmousemove=function(event){
+		//console.log(event.clientX, event.clientY);
+		setPos(event);
+	}
+	smallWrap.onmouseleave = function(){
+		smallWrap.removeChild(magnifier);
+		bigWrap.style.display='none';
+	}
+	
+	function setPos(event){
+		var pos=getPosInElem(event,smallWrap);
+		console.log(pos);
+		var mouse_X = event.clientX;
+		var mouse_Y = event.clientY;
+		
+		magnifier.style.left = -100 + pos.x + 'px';
+		magnifier.style.top = -100 + pos.y +'px';
+		
+		bigWrap.style.display='block';
+		bigWrap.style.backgroundPosition = -pos.x+'px'+' '+-pos.y +'px';
+	}
+	
+	function getPosInElem(event,elem){
+		return {
+			x:event.clientX-elem.getBoundingClientRect().left,
+			y:event.clientY-elem.getBoundingClientRect().top
+		}
+	}
+}
+</script>
+</body>
+</html>

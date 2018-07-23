@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>阻止某个表单控件验证</title>
+<base target="_blank">
+</head>
+
+<body>
+<div id="root">
+<form>
+<input required id="input-01" maxLength="5" placeholder="设定required但不检测">
+<input required id="input-02" maxLength="5" placeholder="设定required且正常检测">
+<input type="submit">
+</form>
+</div>
+
+<script>
+document.getElementById('input-01').oninvalid = function (event){
+	event.preventDefault(); //阻止事件的默认行为
+}
+</script>
+</body>
+</html>
