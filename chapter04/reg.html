@@ -32,7 +32,7 @@
 <script>
 var text_01 = document.getElementById('text-01');
 var text_02 = document.getElementById('text-02');
-var str;
+var str='';
 text_01.addEventListener("input",function(){
 	try{
 		var reg = new RegExp('(' + this.value + ')','m');
@@ -40,11 +40,11 @@ text_01.addEventListener("input",function(){
 	}catch(e){
 
 	}
-}, false);
-text_02.addEventListener("keyup", function(){
-	str = text_02.innerHTML;
+});
+text_02.addEventListener("input", function(){
+	str = text_02.innerText;
 	//console.log(str);
-}, false);
+});
 </script>
 </body>
 </html>

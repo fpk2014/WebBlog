@@ -38,8 +38,12 @@
 </div>
 <script>
 
-document.getElementById('enlarge').onclick = function(){
-	var timer=setInterval(function(){
+var enlarge = document.getElementById('enlarge');
+var ensmall = document.getElementById('ensmall');
+var timer = '' ;
+enlarge.onclick = function(){
+	clearInterval(timer);
+	timer=setInterval(function(){
 		var enlarge_img = document.querySelector('div.enlarge-img');
 		var height = enlarge_img.offsetHeight;
 		var width = enlarge_img.offsetWidth;
@@ -52,8 +56,9 @@ document.getElementById('enlarge').onclick = function(){
 		}
 	}, 20);
 }
-document.getElementById('ensmall').onclick = function(){
-	var timer=setInterval(function(){
+ensmall.onclick = function(){
+	clearInterval(timer);
+	timer=setInterval(function(){
 		var ensmall_img = document.querySelector('div.enlarge-img');
 		var height = ensmall_img.offsetHeight;
 		var width = ensmall_img.offsetWidth;
@@ -62,6 +67,7 @@ document.getElementById('ensmall').onclick = function(){
 			ensmall_img.style.width = width-4+'px';
 		}else{
 			 clearInterval(timer);
+			 
 		}
 	}, 20);
 }
