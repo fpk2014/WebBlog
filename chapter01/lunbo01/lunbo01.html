@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>水平滑动轮播</title>
+<base target="_blank">
+
+<style>
+* {
+	padding:0;
+	margin:0;
+}
+#root {
+	width:800px;
+	height:550px;
+	position: relative;
+	margin: 50px auto;
+	overflow: hidden;
+}
+#lunbo-img {
+	width: 100000px;
+	height:450px;
+	overflow: hidden;
+	position: absolute;
+	left:0px;
+}
+#lunbo-img img {
+	float:left;
+	width:800px;
+	height:500px;
+}
+#nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 800px;
+    height: 100px;
+}
+#nav img {
+	position: absolute;
+	width:160px;
+	height:100px;
+}
+.nav-item {
+	float:left;
+	bottom: 0;
+	left: 0;
+}
+.prowrap {
+    z-index: 100;
+    position: relative;
+	height: 5px;
+	width: 160px;
+	top: 95px;
+}
+.prowrap.one{background: #7b5596;}
+.prowrap.two{background: #83a2cc;}
+.prowrap.three{background: #e18e40;}
+.prowrap.four{background: #47acab;}
+.prowrap.five{background: #c86c8c;}
+</style>
+</head>
+
+<div id="root">
+	<div id="lunbo-img" class="clearfloat">
+		<img src="./1.jpg">
+		<img src="./2.jpg">
+		<img src="./3.jpg">
+		<img src="./4.jpg">
+		<img src="./5.jpg">
+	</div>
+	<div id="nav">
+		<div class="nav-item">
+			<img src="./1.jpg">
+			<div class="prowrap one"></div>
+		</div>
+		<div class="nav-item">
+			<img src="./2.jpg">
+			<div class="prowrap two"></div>
+		</div>
+		<div class="nav-item">
+			<img src="./3.jpg">
+			<div class="prowrap three"></div>
+		</div>
+		<div class="nav-item">
+			<img src="./4.jpg">
+			<div class="prowrap four"></div>
+		</div>
+		<div class="nav-item">
+			<img src="./5.jpg">
+			<div class="prowrap five"></div>
+		</div>
+	</div>
+</div>
+<script>
+window.onload = function(){
+	var imgs = document.querySelectorAll('.clearfloat img');
+	var lunbo_img = document.getElementById('lunbo-img');
+	var imgs_length = imgs.length;
+	var prowraps = document.querySelectorAll('.prowrap');
+	var width = imgs[0].width;
+	
+	var interval=20;//移动时间间隔
+	var stoptime=3000;  //在一张图片上的停留时间
+	var prevFocus = focus = 0;
+	var i, timer;
+	
+	function move(preFocus,focus){
+		var k=0, tmp='';
+		var jiange = Math.abs(focus*width - preFocus*width);
+		if(preFocus<focus){
+			tmp = setInterval(function() {
+				if(k <= jiange){
+					lunbo_img.style.left = -(preFocus*width + k) + 'px';
+					k+=50;
+				}else{
+					 clearInterval(tmp);
+				}
+			}, 10);
+		}else{
+			tmp = setInterval(function() {
+				if(k <= jiange){
+					lunbo_img.style.left = -(preFocus*width - k) + 'px';
+					k+=50;
+				}else{
+					 clearInterval(tmp);
+				}
+			}, 10);
+		}
+	}
+
+	//自动循环播放下一张
+	function auto(){
+		prowraps[prevFocus].style.backgroundColor = '#7b5596';
+		prowraps[focus].style.backgroundColor = 'red';
+		move(prevFocus, focus);
+		prevFocus = focus;
+		focus++;
+		if(focus>=imgs_length)
+			focus=0;
+	}
+	prowraps[focus].style.backgroundColor = 'red';
+	timer = setInterval(auto,stoptime);  //设定定时切换
+}
+</script>
+</body>
+</html>
