@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>桌上弹球</title>
+</head>
+<body>
+<div>
+	<canvas id="canvas" tabindex="0"  width='300' height='500'></canvas>
+</div>
+<script>
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+var WIDTH = canvas.width;
+var HEIGHT = canvas.height;
+console.log(WIDTH, HEIGHT);
+var isStart = false;
+var timer, mousePos, isMouseDown;
+canvas.addEventListener('keydown', keyEvent, true);
+canvas.onmousedown = dragStart;
+canvas.onmousemove = dragging;
+canvas.onmouseup = dragEnd;
+canvas.focus(); 
+
+
+var colors = ['#fe0000','#fef300','#6bc767','#53afe3'];
+var count = 80;
+var bricks = (function(){
+	var bricks = [];
+	var brick;
+	for(var i=0; i<count; i++){
+		brick = {
+			x: 8 + i%10 * 29,
+			y: 8 + parseInt(i/10) * 22,
+			width: 24,
+			height: 12,
+			color: colors[Math.floor(Math.random()*colors.length)],
+			hidden: false
+		}
+		bricks.push(brick);
+	}
+	return bricks;
+}());
+var controls = {
+	breaker: {x:WIDTH/2-6,y:HEIGHT-14-12,width:12,height:12,color:'white',vx:3,vy:-2},
+	plate:{x:WIDTH/2-22,y:HEIGHT-12,width:44,height:12,color:'white'}
+}
+var rule = '点击开始\n 键盘左右键移动';
+
+draw();
+drawText(rule);
+
+function draw(){
+	drawBackground();
+	drawBrick();
+	drawControls();
+}
+
+function drawBackground(){
+	ctx.clearRect(0, 0, WIDTH, HEIGHT);
+	ctx.fillStyle = 'black';
+	ctx.fillRect(0, 0, WIDTH, HEIGHT);
+}
+
+function drawBrick(){
+	var brick;
+	for(var i in bricks){
+		brick = bricks[i];
+		
+		if(!brick.hidden){
+			ctx.beginPath();
+			ctx.fillStyle=brick.color;
+			ctx.moveTo(brick.x, brick.y);
+			ctx.lineTo(brick.x+brick.width, brick.y);
+			ctx.lineTo(brick.x+brick.width, brick.y+brick.height);
+			ctx.lineTo(brick.x, brick.y+brick.height);
+			ctx.closePath();
+			
+			//碰撞判断
+			if(ctx.isPointInPath(controls.breaker.x, controls.breaker.y) ||
+				ctx.isPointInPath(controls.breaker.x+controls.breaker.width, controls.breaker.y) ||
+				ctx.isPointInPath(controls.breaker.x, controls.breaker.y+controls.breaker.height) ||
+				ctx.isPointInPath(controls.breaker.x+controls.breaker.width, controls.breaker.y+controls.breaker.height)){
+				brick.hidden=true;
+				
+				//向反方向移动
+				controls.breaker.vx = -controls.breaker.vx;
+				controls.breaker.vy = -controls.breaker.vy;
+				count--;
+				continue;
+			}
+			ctx.fill();
+		}
+	}
+}
+
+function drawControls(){
+	var control;
+	for(var i in controls){
+		control = controls[i]
+		
+		ctx.beginPath();
+		ctx.fillStyle =  control.color;
+		ctx.fillRect(control.x, control.y, control.width, control.height);
+	}
+}
+
+function drawText(str){
+	ctx.beginPath();
+	ctx.textAlign='center';
+	ctx.textBaseLine='middle';
+	ctx.font='25px arial';
+	ctx.fillText(str, WIDTH/2, HEIGHT/2);
+}
+
+// 更新底盘
+function updatePlate(keyCode){
+	var charCode = {'65':'a', '68':'d', '37':'<-', '39':'->'}
+	if(isStart == true){
+		if(charCode[keyCode] == 'a' || charCode[keyCode]=='<-'){
+			if(controls.plate.x > 0)
+				controls.plate.x -= 10;
+		}
+		else if(charCode[keyCode] == 'd' || charCode[keyCode]=='->'	){
+			if(controls.plate.x + controls.plate.width < WIDTH)
+				controls.plate.x += 10;
+		}
+		//console.log(controls.plate.x);
+	}
+}
+
+function updateBreaker(){
+	controls.breaker.x+=controls.breaker.vx;
+	controls.breaker.y+=controls.breaker.vy;
+	//与底盘发生碰撞
+	if(controls.breaker.y == HEIGHT-controls.plate.height-controls.breaker.height && 
+		controls.breaker.x >= controls.plate.x-controls.breaker.width &&
+		controls.breaker.x <= controls.plate.x+controls.plate.width)
+	{
+	    controls.breaker.vx = Math.pow(-1,Math.round(Math.random()))*Math.ceil(Math.random()*4);
+		controls.breaker.vy = -controls.breaker.vy;
+	}
+	
+	//与左边框或右边框发生碰撞
+	if(controls.breaker.x<=0  ||
+		controls.breaker.x+controls.breaker.width>=WIDTH){
+		controls.breaker.vx = -controls.breaker.vx
+	}
+	//与顶边框发生碰撞
+	if(controls.breaker.y<=0  ){controls.breaker.vy=-controls.breaker.vy}
+	//与底边框发生碰撞
+	if(controls.breaker.y>=HEIGHT){
+		isStart = false;
+		drawText('LOST');
+		clearInterval(timer);
+	}
+	//console.log(controls.breaker.x);
+}
+
+function keyEvent(event){
+	//console.log(event);
+	var keyCode = event.keyCode
+	if(keyCode == 32 && isStart==false){
+		isStart = true;
+		timer = setInterval(function(){
+			draw();
+			updateBreaker();
+		}, 10);
+	}
+	updatePlate(keyCode);
+	if(count==0){clearInterval(timer);drawText('WIN');}
+}
+
+function dragStart(event){
+	mousePos = getMousePos(event).x;
+	//console.log(mousePos, isStart);
+	if(isStart==false){
+		isStart = true;
+		timer = setInterval(function(){
+			draw();
+			updateBreaker();
+		}, 10);
+	}
+	isMouseDown = true;
+}
+
+function dragging(event){
+	if(isMouseDown){
+		var curPos = getMousePos(event).x;
+		//console.log(curPos-mousePos);
+		controls.plate.x  += curPos - mousePos;
+		mousePos = curPos;
+	}
+}
+
+function dragEnd(event){
+	isMouseDown = false;
+}
+
+// 鼠标在画布上的位置
+function getMousePos(event){
+	return {
+		x:event.clientX - canvas.getBoundingClientRect().left,
+		y:event.clientY - canvas.getBoundingClientRect().top
+	}
+}
+
+</script>
+</body>
+</html>
