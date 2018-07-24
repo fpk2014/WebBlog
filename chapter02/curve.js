@@ -26,7 +26,7 @@ function init(){
 init();
 
 function draw(){
-	ctx.clearRect(0, 0, canvas.width, canvas.width, canvas.height);
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	
 	ctx.beginPath();
 	ctx.moveTo(points.p1.x, points.p1.y);

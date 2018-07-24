@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>时钟</title>
+</head>
+<style>
+#canvas{background:white;}
+</style>
+<body>
+<div>
+	<canvas id="canvas"></canvas>
+</div>
+<script>
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+canvas.width=500;
+canvas.height= 500;
+var width = canvas.width;
+var height = canvas.height;
+var points = {
+	base: {x:width/2, y:height/2},
+}
+setInterval(draw, 1000);
+
+function draw(){
+	ctx.clearRect(0, 0, width, height);
+	drawBorder();
+	drawStroke();
+	drawWatchHand();
+}
+
+//画框
+function drawBorder(){
+	ctx.beginPath();
+	ctx.lineWidth=6;
+	var x = points['base'].x;
+	var y = points['base'].y;
+	ctx.arc(x, y, width*0.4, 0, Math.PI*2);
+	ctx.stroke();
+}
+
+// 刻度
+function drawStroke(){
+	for(var i=0; i<60; i++){
+		ctx.save();
+		ctx.beginPath();
+		
+		ctx.translate(width/2, height/2);  //平移
+		ctx.rotate(Math.PI/180 * 6 * i);
+		ctx.moveTo(0, -0.4*width);
+		if(i%5==0){
+			ctx.lineWidth=6;
+			ctx.lineTo(0,-0.35*width);
+		}else{
+			ctx.lineWidth=3;
+			ctx.lineTo(0,-0.38*width);
+		}
+		
+		ctx.stroke();
+		ctx.restore();
+	}
+}
+
+// 表针
+function drawWatchHand(){
+	var time = new Date();
+	var hour = time.getHours();
+	var min = time.getMinutes();
+	var sec = time.getSeconds();
+	var hourLength = width*0.1, minLength = width*0.2, secLength = width*0.3;
+	var x = width/2, y=height/2;
+	console.log(hour, min, sec, hourLength, minLength, secLength)
+	_drawWatchHand(x, y, hourLength, 8, 30*hour);
+	_drawWatchHand(x, y, minLength, 4, 6*min);
+	_drawWatchHand(x, y, secLength, 2, 6*sec);
+	
+}
+
+function _drawWatchHand(x, y, length, lineWidth, rot){
+	ctx.save();
+	ctx.beginPath();
+	
+	ctx.translate(x, y);  //平移
+	ctx.rotate(Math.PI/180 * rot);
+	ctx.moveTo(0, 0);
+	ctx.lineTo(0, -length);
+	ctx.lineWidth = lineWidth;
+	ctx.lineCap = 'round';
+	
+	ctx.stroke();
+	ctx.restore();
+}
+</script>
+</body>
+</html>
