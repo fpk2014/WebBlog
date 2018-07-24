@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+
+</style>
+</head>
+<body>
+<div id="root">
+<canvas id="canvas" width="300" height="500"></canvas>
+</div>
+
+<script>
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+var width = canvas.width;
+var height = canvas.height;
+var brick_width = width/4;
+var brick_height = height/4;
+var bricks, brick_focus;
+var mousePos, timer, isStart=false, score=0, isKill=false;
+canvas.onmouseup = dragEnd;
+initial();
+
+function initial(){
+	bricks = createBricks();
+	brick_focus = [0,1,1,2,2];
+	draw();
+	drawText('点击开始');
+}
+
+function draw(){
+	drawBackground();
+	drawBrick();	
+}
+
+function createBricks(){
+	var tmp = [];
+	var brick, i, j;
+	for(i=height; i>=0; i-=brick_height){
+		for(j=0; j<4; j++){
+			brick = {
+				x: j*brick_width,
+				y: i-brick_height,
+			}
+			tmp.push(brick);
+		}
+		
+	}
+	return tmp;
+};
+
+function drawBackground(){
+	ctx.clearRect(0, 0, width, height);
+	ctx.fillStyle = 'black';
+	ctx.fillRect(0, 0, width, height);
+}
+
+function drawBrick(){
+	var i;
+	for(i=0; i<bricks.length; i++){
+		ctx.fillStyle = 'black'
+		ctx.fillRect(bricks[i].x, bricks[i].y , brick_width, brick_height);
+		
+		if(brick_focus[parseInt(i/4)] == i%4+1){
+			ctx.fillStyle = 'gray';
+		}else{
+			ctx.fillStyle = 'white';
+		}
+		ctx.fillRect(bricks[i].x+1, bricks[i].y+1,brick_width-2,brick_height-2);
+		
+		// 点击处理
+		if(mousePos && mousePos.x > bricks[i].x && mousePos.x <  bricks[i].x+brick_width &&
+			mousePos.y> bricks[i].y && mousePos.y< bricks[i].y+brick_height){
+			console.log('inclick');
+			if(ctx.fillStyle == '#ffffff'){
+				//失败, 游戏结束
+				ctx.fillStyle='red';
+				ctx.fillRect(bricks[i].x+1, bricks[i].y+1,brick_width-2,brick_height-2);
+				clearInterval(timer);
+				isStart = false;
+				isKill = true;
+			}else{
+				score++;
+				ctx.fillStyle='white';
+				brick_focus[parseInt(i/4)] = 0;
+				ctx.fillRect(bricks[i].x+1, bricks[i].y+1,brick_width-2,brick_height-2);
+			}
+		}
+	}
+	if(isKill == true){
+		drawText('score is ' + score);
+	}
+}
+
+function update(){
+	timer = setInterval(function(){
+		var i, j, k, error;
+		// 达到底边
+		if(bricks[0].y == height){
+			//有灰块未被点击
+			if(brick_focus[0]!=0){
+				isKill = true;
+				isStart = false;
+				for(i in bricks){
+					bricks[i].y -= brick_height/2;
+				}
+				draw();
+				//显示错误方块
+				error = brick_focus[0]-1;
+				ctx.fillStyle = 'red';
+				ctx.fillRect(bricks[error].x+1, bricks[error].y+1,brick_width-2,brick_height-2);
+				drawText('score is ' + score);
+				clearInterval(timer);
+			}else{
+				for(j=0; j<4; j++){
+					bricks.shift();
+				}
+				for(k=0; k<4; k++){
+					brick = {
+						x: k*brick_width,
+						y: -brick_height
+					}
+					bricks.push(brick);
+				}
+				brick_focus.shift();
+				brick_focus.push(Math.floor(Math.random()*5));
+			}
+		}else{
+			// 向下移动
+			for(i in bricks){
+				bricks[i].y++;
+			}
+			draw();
+		}
+	}, 1);
+}
+
+function drawText(str){
+	ctx.beginPath();
+	ctx.fillStyle = 'blue';
+	ctx.textAlign='center';
+	ctx.textBaseLine='middle';
+	ctx.font='25px arial';
+	ctx.fillText(str, width/2, height/2);
+}
+
+function dragEnd(event){
+	if(isStart == true){
+		mousePos = getMousePos(event);
+		draw();
+		//console.log(mousePos);
+		mousePos = null;
+	}
+	else{
+		score = 0;
+		bricks = createBricks();
+		brick_focus = [0,1,1,2,2];
+		isStart = true;
+		isKill = false;
+		update();
+	}
+}
+
+// 鼠标在画布上的位置
+function getMousePos(event){
+	return {
+		x:event.clientX - canvas.getBoundingClientRect().left,
+		y:event.clientY - canvas.getBoundingClientRect().top
+	}
+}
+</script>
+</body>
+</html>
