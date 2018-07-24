@@ -3,20 +3,141 @@
 <head>
 <meta charset="utf-8">
 <title>贝塞尔曲线</title>
-<base target="_blank">
 </head>
+<style>
+body {background:gray;}
+#canvas{background:white;}
+#code{background:#eee; width:600px}
+</style>
 <body>
-<div id="canvas"></div>
+<div>
+<canvas id="canvas"></canvas>
+<pre id="code"></pre>
+</div>
 </body>
 <script>
-canvas = document.getElementById("canvas");
-context = canvas.getContext("2d")
-context.lineWidth = 6 ;
-context.strokeStyle = 'black'
-context.beginPath();
-context.moveTo(100, 250);
-context.bezierCurveTo(150, 100, 355, 301, 400, 250);
-context.stroke();
+var canvas = document.getElementById('canvas');
+var code = document.getElementById('code');
+var ctx = canvas.getContext('2d');
+canvas.width = 500;
+canvas.height = 500;
+var points = {};
+function init(){
+	points = {
+		p1: {x:100,y:250},
+		p2: {x:400,y:250},
+	};
+	points.cp1={x:150,y:100};
+	points.cp2={x:350,y:100};
+	canvas.onmousedown = dragStart;
+	canvas.onmousemove = dragging;
+	canvas.onmouseup = dragEnd;
+	draw();
+}
+init();
+
+function draw(){
+	ctx.clearRect(0, 0, canvas.width, canvas.width, canvas.height);
+	
+	ctx.beginPath();
+	ctx.moveTo(points.p1.x, points.p1.y);
+	ctx.bezierCurveTo(points.cp1.x,points.cp1.y,
+						points.cp2.x,points.cp2.y,
+						points.p2.x,points.p2.y);
+	ctx.lineWidth = 6;
+	ctx.strokeStyle = 'black';
+	ctx.lineCap = 'round';
+	ctx.stroke();
+	controlsLine();
+	for(var p in points){
+		circle(points[p].x, points[p].y, 10);
+	}
+	showCode();
+}
+
+function circle(x, y, radius){
+	ctx.beginPath();
+	ctx.lineWidth=2;
+	ctx.arc(x, y, radius, 0, Math.PI*2);
+	ctx.fill();
+	ctx.stroke();
+}
+
+//画控制线
+function controlsLine(){
+	ctx.beginPath();
+	ctx.lineWidth=1;
+	ctx.strokeStyle='red'
+	ctx.moveTo(points.p1.x, points.p1.y);
+	ctx.lineTo(points.cp1.x, points.cp1.y);
+	ctx.moveTo(points.p2.x, points.p2.y);
+	ctx.lineTo(points.cp2.x, points.cp2.y);
+	ctx.stroke();
+}
+
+function showCode(){
+	code.innerHTML  = '\
+canvas = document.getElementById("canvas");\n\
+ctx = canvas.getContext("2D");\n\
+ctx.lineWidth = 6;\n\
+ctx.strokeStyle = "black";\n\
+ctx.beginPath();\n\
+ctx.moveTo(' +
+	[points.p1.x, points.p1.y].join()
++ ');\ncontext.bezierCurveTo('+
+	[points.cp1.x, points.cp1.y, points.cp2.x, points.cp2.y, points.p2.x, points.p2.y].join()
++');\n\
+ctx.stroke();\n\
+'
+}
+
+var mousePos, drag;
+// onmousedown
+function dragStart(event){
+	mousePos = getMousePos(event);
+	for(var p in points){
+		var x=mousePos.x - points[p].x;
+		var y=mousePos.y - points[p].y;
+		if(x*x + y*y < 100){
+			drag = p;
+			return;
+		}
+	}
+}
+
+// onmousemove
+function dragging(event){
+	if(drag){
+		// 获得现在鼠标所在位置
+		// 拖拽的点的位置加上鼠标位置的变化量
+		var curPos = getMousePos(event);
+		
+		points[drag].x += curPos.x-mousePos.x;
+		points[drag].y += curPos.y-mousePos.y;
+		console.log(points[drag]);
+		mousePos = curPos;
+		
+		canvas.style.cursor='move';
+		draw();
+	}
+}
+
+//onmouseleave
+function dragEnd(event){
+	if(drag){
+		drag=null;
+		canvas.style.cursor='default'
+		draw();
+	}
+}
+
+// 鼠标在画布上的位置
+function getMousePos(event){
+	return {
+		x:event.clientX - canvas.getBoundingClientRect().left,
+		y:event.clientY - canvas.getBoundingClientRect().top
+	}
+}
 </script>
 </body>
 </html>
