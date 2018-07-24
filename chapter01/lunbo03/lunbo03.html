@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>平滑滚动轮播</title>
+<base target="_blank">
+
+<body> 
+<style type="text/css"> 
+#demo { width: 100%; overflow:hidden; } 
+#indemo { float: left; width: 800%; } 
+img { width: 980px;height: 210px; }
+a {cursor: pointer;}
+#demo1 { float: left; } 
+#demo2 { float: left; } 
+</style> 
+<div id="demo"> 
+	<div id="indemo"> 
+		<div id="demo1"> 
+			<a><img src="1.jpg" border="0" /></a>
+			<a><img src="2.jpg" border="0" /></a>
+			<a><img src="3.jpg" border="0" /></a>
+		</div> 
+		<div id="demo2"></div> 
+	</div> 
+</div> 
+<script> 
+var speed=10; 
+var tab=document.getElementById("demo"); 
+var tab1=document.getElementById("demo1"); 
+var tab2=document.getElementById("demo2"); 
+tab2.innerHTML=tab1.innerHTML; 
+// javascript中元素的scrollLeft和scrollTop属性说明
+// 两个属性只能用于元素设置了overflow的css样式中
+// 否则这两个属性没有任何意义
+function auto(){ 
+	if(tab2.offsetWidth-tab.scrollLeft<=0) 
+		tab.scrollLeft-=tab1.offsetWidth 
+	else{ 
+		tab.scrollLeft+=5; 
+	} 
+} 
+var tmp=setInterval(auto,speed); 
+tab.onmouseover=function() {clearInterval(tmp)}; 
+tab.onmouseout=function() {tmp=setInterval(auto,speed)}; 
+</script> 
+</body> 
+</html>
