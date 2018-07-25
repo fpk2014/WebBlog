@@ -2,6 +2,9 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" 
+	content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
 <title>时钟</title>
 </head>
 <style>
@@ -14,8 +17,8 @@
 <script>
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
-canvas.width=500;
-canvas.height= 500;
+canvas.width=350;
+canvas.height= 350;
 var width = canvas.width;
 var height = canvas.height;
 var points = {
@@ -70,7 +73,7 @@ function drawWatchHand(){
 	var sec = time.getSeconds();
 	var hourLength = width*0.1, minLength = width*0.2, secLength = width*0.3;
 	var x = width/2, y=height/2;
-	console.log(hour, min, sec, hourLength, minLength, secLength)
+	//console.log(hour, min, sec, hourLength, minLength, secLength)
 	_drawWatchHand(x, y, hourLength, 8, 30*hour);
 	_drawWatchHand(x, y, minLength, 4, 6*min);
 	_drawWatchHand(x, y, secLength, 2, 6*sec);
