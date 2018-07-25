@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>渐变绘制花边</title>
+<meta name="viewport" 
+	content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
+<style>
+.lace-box {
+    width: 360px;
+    height: 200px;
+    margin: 50px auto;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+	background-image: radial-gradient(#fff 40%,transparent 0);
+	background-size: 40px 40px;
+}
+.lace-box.one {
+	background-repeat: repeat-x;
+	background-color: #ED6D45;
+    background-position: bottom -20px left 0px;
+}
+.lace-box.two {
+	background-repeat: repeat-y;
+	background-color: #37ABE3;
+    background-position: left -20px top 0px;
+}
+.lace-box.three {
+	background-repeat: repeat-x;
+	background-color: #F6E65E;
+    background-position: top -20px left 0px;
+}
+</style>
+</head>
+<body>
+<div class="container"> 
+	<div class="lace-box one"></div>
+	<div class="lace-box two"></div>
+	<div class="lace-box three"></div>
+</div> 
+</body>
+</html>
